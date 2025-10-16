@@ -1,0 +1,40 @@
+# Flowdoc Requirements
+
+# Core Dependencies
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Migrate==4.0.5
+Flask-JWT-Extended==4.5.3
+Flask-Cors==4.0.0
+gunicorn==21.2.0
+psycopg2-binary==2.9.7
+SQLAlchemy==2.0.21
+marshmallow==3.20.1
+pydantic==2.4.2
+
+# AWS
+boto3==1.29.7
+aws-xray-sdk==2.12.0
+
+# Cache & Queue
+redis==5.0.1
+celery==5.3.4
+
+# Monitoring
+prometheus-client==0.17.1
+python-json-logger==2.0.7
+
+# Development
+pytest==7.4.2
+pytest-cov==4.1.0
+pytest-mock==3.11.1
+black==23.9.1
+flake8==6.1.0
+mypy==1.5.1
+pre-commit==3.4.0
+
+# Utils
+python-dotenv==1.0.0
+requests==2.31.0
+PyJWT==2.8.0
+PyYAML==6.0.1

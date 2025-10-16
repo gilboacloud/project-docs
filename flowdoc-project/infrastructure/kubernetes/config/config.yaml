@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flowdoc
+  labels:
+    name: flowdoc
+    app: flowdoc
+    environment: production
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flowdoc-config
+  namespace: flowdoc
+  labels:
+    app: flowdoc
+data:
+  FLOWDOC_ENV: "production"
+  FLOWDOC_AWS_REGION: "us-west-2"
+  FLOWDOC_S3_BUCKET: "flowdoc-documents"
+  FLOWDOC_SIGNATURE_BUCKET: "flowdoc-signatures"
+  FLOWDOC_REDIS_HOST: "redis-service"
+  FLOWDOC_REDIS_PORT: "6379"
+  FLOWDOC_DATABASE_URL: "postgresql://flowdoc:password@postgres-service:5432/flowdoc"
+  FLOWDOC_ENABLE_OCR: "true"
+  FLOWDOC_ENABLE_N8N: "true"
+  FLOWDOC_LOG_LEVEL: "INFO"
+  
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: flowdoc-secrets
+  namespace: flowdoc
+type: Opaque
+stringData:
+  FLOWDOC_JWT_SECRET_KEY: "your-jwt-secret-key"
+  FLOWDOC_AWS_ACCESS_KEY_ID: "your-access-key"
+  FLOWDOC_AWS_SECRET_ACCESS_KEY: "your-secret-key"
+  FLOWDOC_DATABASE_PASSWORD: "your-db-password"
+  FLOWDOC_N8N_API_KEY: "your-n8n-api-key"

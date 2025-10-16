@@ -1,0 +1,73 @@
+version: '3.8'
+
+# Flowdoc Development Environment
+services:
+  flowdoc-api:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
+    container_name: flowdoc-api
+    ports:
+      - "8000:8000"
+    environment:
+      - FLOWDOC_ENV=development
+      - FLOWDOC_DATABASE_URL=postgresql://flowdoc:password@db:5432/flowdoc
+      - FLOWDOC_REDIS_HOST=redis
+      - FLOWDOC_AWS_ACCESS_KEY_ID=${FLOWDOC_AWS_ACCESS_KEY_ID}
+      - FLOWDOC_AWS_SECRET_ACCESS_KEY=${FLOWDOC_AWS_SECRET_ACCESS_KEY}
+      - FLOWDOC_AWS_REGION=${FLOWDOC_AWS_REGION:-us-west-2}
+    depends_on:
+      - db
+      - redis
+      - n8n
+
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=flowdoc
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=flowdoc
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  flowdoc-n8n:
+    image: n8nio/n8n:latest
+    container_name: flowdoc-n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=${FLOWDOC_N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${FLOWDOC_N8N_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${FLOWDOC_N8N_PASSWORD:-password}
+      - N8N_ENCRYPTION_KEY=${FLOWDOC_N8N_ENCRYPTION_KEY:-your-secret-key-here}
+      - WEBHOOK_URL=http://flowdoc-n8n:5678/
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=db
+      - DB_POSTGRESDB_DATABASE=flowdoc_n8n
+      - DB_POSTGRESDB_USER=flowdoc
+      - DB_POSTGRESDB_PASSWORD=password
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - db
+    restart: unless-stopped
+    labels:
+      - "flowdoc.service=workflow"
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  postgres_data:
+  redis_data:
+  n8n_data:
